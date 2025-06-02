@@ -153,19 +153,19 @@ export const FullTableView = ({
       )}
       <div className="overflow-x-auto">
         <table className="w-full min-w-max">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700 border-r">
+          <thead className="bg-gray-100 z-[100]">
+            <tr className="">
+              <th className="px-4 py-3 print:py-0 text-left font-semibold text-gray-700 border-r">
                 Turno
               </th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700 border-r">
+              <th className="px-4 py-3 print:py-0 text-left font-semibold text-gray-700 border-r">
                 Horário
               </th>
-              <th className="px-2 py-3 text-left font-semibold text-gray-700 w-4 print:hidden"></th>
+              <th className="px-2 py-3 print:py-0 text-left font-semibold text-gray-700 w-4 print:hidden"></th>
               {days.map((day) => (
                 <th
                   key={day}
-                  className="px-4 py-3 text-center font-semibold text-gray-700 border-l min-w-32"
+                  className="px-4 py-3 print:py-0 text-center font-semibold text-gray-700 border-l min-w-32"
                 >
                   <span className="lg:hidden">
                     {daysShort[days.indexOf(day)]}
@@ -193,16 +193,16 @@ export const FullTableView = ({
                   {isFirstInGroup ? (
                     <td
                       rowSpan={group.count}
-                      className="px-4 py-3 [writing-mode:sideways-lr] text-5xl text-gray-600 border-r bg-gray-50 text-center align-middle"
+                      className="px-4 py-3 print:py-0 [writing-mode:sideways-lr] text-5xl text-gray-600 border-r bg-gray-50 text-center align-middle"
                     >
                       {slot.period}
                     </td>
                   ) : null}
 
-                  <td className="px-4 py-3 text-sm text-center font-medium text-gray-800 border-r bg-gray-50">
+                  <td className="px-4 py-3 print:py-0 text-sm text-center font-medium text-gray-800 border-r bg-gray-50">
                     {slot.time}
                   </td>
-                  <td className="px-2 py-3 border-r bg-gray-50 print:hidden">
+                  <td className="px-2 py-3 print:py-0 border-r bg-gray-50 print:hidden">
                     <button
                       onClick={() => removeTimeSlot(slot.time)}
                       className="text-red-500 hover:text-red-700 p-1"
@@ -218,7 +218,7 @@ export const FullTableView = ({
                     return (
                       <td
                         key={day}
-                        className="border-l border-gray-200 p-1 h-12 relative"
+                        className="border-l border-gray-200 p-1 h-12 print:h-0 relative"
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, day, slot.time)}
                       >
@@ -235,14 +235,19 @@ export const FullTableView = ({
                               onContextMenu={(e) =>
                                 handleContextMenu(e, day, slot.time, activity)
                               }
-                              className={`w-auto h-full rounded px-2 py-1 text-xs text-white font-medium cursor-move hover:opacity-80 transition-opacity flex items-center justify-between group activity-block`}
+                              className={`w-auto h-full rounded px-2 py-1 print:py-0 text-xs text-white font-medium cursor-move hover:opacity-80 transition-opacity flex items-center justify-between group activity-block`}
                               style={{
                                 backgroundColor: activity.color,
-                                height: `${
+                                "--normal-height": `${
                                   activity.duration * 46 +
                                   (activity.duration - 1) * 8 +
                                   (activity.duration - 1) * 1
                                 }px`,
+                                "--print-height": `${
+                                  activity.duration * 20 +
+                                  (activity.duration - 1) * 9
+                                }px`,
+                                height: "var(--normal-height)",
                                 position: "absolute",
                                 top: "4px",
                                 left: "4px",
@@ -250,10 +255,10 @@ export const FullTableView = ({
                                 zIndex: 10,
                               }}
                             >
-                              <span className="screen:truncate">
+                              <span className="group-hover:truncate">
                                 {activity.name}
                               </span>
-                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                              <div className="items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex">
                                 <div className="flex flex-col">
                                   <button
                                     onClick={(e) => {

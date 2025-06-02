@@ -28,6 +28,11 @@ export const printStyles = `
     table {
       font-size: 10px !important;
       width: 100% !important;
+      break-inside: auto;
+    }
+
+    tr{
+      break-inside: auto;
     }
     
     th, td {
@@ -49,6 +54,10 @@ export const printStyles = `
       font-size: 18px !important;
       margin-bottom: 10px !important;
       text-align: center;
+    }
+
+    .activity-block {
+      height: var(--print-height) !important;
     }
   }
 
