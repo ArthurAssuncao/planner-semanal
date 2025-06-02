@@ -87,4 +87,12 @@ input[type="color"]::-webkit-color-swatch {
   padding: 4px 8px;
   border-radius: 4px;
 }
+
+.context-menu-item {
+  transition: background-color 0.2s;
+}
+
+.context-menu-item:hover {
+  background-color: #f3f4f6;
+}
 `;

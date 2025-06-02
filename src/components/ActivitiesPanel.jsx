@@ -1,16 +1,16 @@
-import { Edit2, GripVertical, Menu, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { ActivityModal } from './ActivityModal';
+import { Edit2, GripVertical, Menu, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ActivityModal } from "./ActivityModal";
 
-export const ActivitiesPanel = ({ 
+export const ActivitiesPanel = ({
   activities,
-  activitiesCollapsed, 
+  activitiesCollapsed,
   setActivitiesCollapsed,
   addActivity,
   removeActivityFromList,
   handleDragStart,
   handleDragEnd,
-  updateActivity
+  updateActivity,
 }) => {
   const [editingActivity, setEditingActivity] = useState(null);
 
@@ -30,7 +30,7 @@ export const ActivitiesPanel = ({
         <h2 className="text-lg sm:text-xl font-semibold flex items-center">
           <GripVertical className="mr-2" size={20} />
           Atividades Disponíveis
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               addActivity();
@@ -41,21 +41,22 @@ export const ActivitiesPanel = ({
             <Plus size={18} />
           </button>
         </h2>
-        <button 
+        <button
           onClick={() => setActivitiesCollapsed(!activitiesCollapsed)}
           className="sm:hidden p-2"
         >
           <Menu size={20} />
         </button>
       </div>
-      
-      <div className={`transition-all duration-300 ${activitiesCollapsed ? 'hidden sm:block' : 'block'}`}>
+
+      <div
+        className={`transition-all duration-300 ${
+          activitiesCollapsed ? "hidden sm:block" : "block"
+        }`}
+      >
         <div className="flex flex-wrap gap-2 mt-3">
-          {activities.map(activity => (
-            <div
-              key={activity.id}
-              className="flex items-center group relative"
-            >
+          {activities.map((activity) => (
+            <div key={activity.id} className="flex items-center group relative">
               <div
                 draggable
                 onDragStart={(e) => handleDragStart(e, activity)}
@@ -97,7 +98,6 @@ export const ActivitiesPanel = ({
           onClose={() => setEditingActivity(null)}
         />
       )}
-    
     </div>
   );
 };

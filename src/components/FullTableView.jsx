@@ -1,10 +1,13 @@
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ContextMenu } from "./ContextMenu";
 
 export const FullTableView = ({
   days,
   daysShort,
   timeSlots,
   schedule,
+  setSchedule,
   removeTimeSlot,
   handleDragOver,
   handleDrop,
@@ -37,8 +40,117 @@ export const FullTableView = ({
 
   const periodGroups = groupPeriods();
 
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, day, time, activity) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      day,
+      time,
+      activity,
+    });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const handleDuplicateBelow = () => {
+    if (!contextMenu) return;
+
+    const { day, time, activity } = contextMenu;
+    const timeIndex = timeSlots.findIndex((slot) => slot.time === time);
+
+    if (timeIndex < timeSlots.length - 1) {
+      const newTime = timeSlots[timeIndex + 1].time;
+      const newKey = `${day}-${newTime}`;
+
+      if (!schedule[newKey]) {
+        const newSchedule = { ...schedule };
+        newSchedule[newKey] = {
+          ...activity,
+          duration: 1,
+          isFirst: true,
+        };
+        setSchedule(newSchedule);
+      }
+    }
+
+    closeContextMenu();
+  };
+
+  const handleDuplicateNextDay = () => {
+    if (!contextMenu) return;
+
+    const { day, time, activity } = contextMenu;
+    const dayIndex = days.indexOf(day);
+
+    if (dayIndex < days.length - 1) {
+      const nextDay = days[dayIndex + 1];
+      const newKey = `${nextDay}-${time}`;
+
+      if (!schedule[newKey]) {
+        const newSchedule = { ...schedule };
+        newSchedule[newKey] = {
+          ...activity,
+          duration: 1,
+          isFirst: true,
+        };
+        setSchedule(newSchedule);
+      }
+    }
+
+    closeContextMenu();
+  };
+
+  const handleRemoveActivity = () => {
+    if (!contextMenu) return;
+
+    const { day, time } = contextMenu;
+    removeActivity(`${day}-${time}`);
+    closeContextMenu();
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (contextMenu) {
+        closeContextMenu();
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [contextMenu]);
+
+  const contextActions = [
+    {
+      label: "Duplicar para célula abaixo",
+      handler: handleDuplicateBelow,
+    },
+    {
+      label: "Duplicar para próximo dia",
+      handler: handleDuplicateNextDay,
+    },
+    {
+      label: "Remover",
+      handler: handleRemoveActivity,
+    },
+  ];
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={closeContextMenu}
+          actions={contextActions}
+        />
+      )}
       <div className="overflow-x-auto">
         <table className="w-full min-w-max">
           <thead className="bg-gray-100">
@@ -119,6 +231,9 @@ export const FullTableView = ({
                               }
                               onDragStart={(e) =>
                                 handleDragStart(e, activity, true, scheduleKey)
+                              }
+                              onContextMenu={(e) =>
+                                handleContextMenu(e, day, slot.time, activity)
                               }
                               className={`w-auto h-full rounded px-2 py-1 text-xs text-white font-medium cursor-move hover:opacity-80 transition-opacity flex items-center justify-between group activity-block`}
                               style={{

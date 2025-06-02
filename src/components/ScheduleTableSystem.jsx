@@ -42,7 +42,9 @@ const ScheduleTableSystem = () => {
       color,
     };
 
-    setActivities([...activities, newActivity]);
+    setActivities(
+      [...activities, newActivity].sort((a, b) => a.name.localeCompare(b.name))
+    );
   };
 
   // Função para remover atividade
@@ -87,10 +89,11 @@ const ScheduleTableSystem = () => {
   const [activities, setActivities] = useState(() => {
     const saved = loadFromStorage();
     return (
-      saved?.activities || [
+      saved?.activities.sort((a, b) => a.name.localeCompare(b.name)) ||
+      [
         { id: "math", name: "Matemática", color: "#3B82F6" },
         // ... outras atividades padrão
-      ]
+      ].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
 
@@ -172,9 +175,11 @@ const ScheduleTableSystem = () => {
   const updateActivity = (updatedActivity) => {
     // Atualiza a lista de atividades
     setActivities(
-      activities.map((activity) =>
-        activity.id === updatedActivity.id ? updatedActivity : activity
-      )
+      activities
+        .map((activity) =>
+          activity.id === updatedActivity.id ? updatedActivity : activity
+        )
+        .sort((a, b) => a.name.localeCompare(b.name))
     );
 
     // Atualiza todas as instâncias na tabela de horários
@@ -200,11 +205,10 @@ const ScheduleTableSystem = () => {
       <style jsx>{printStyles}</style>
 
       <div className="p-3 sm:p-6 max-w-full mx-auto bg-gray-50 min-h-screen">
-        <div className="mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 print:text-center print:text-lg">
-            Sistema de Horários
-          </h1>
-
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 print:text-center print:text-lg">
+          Sistema de Horários
+        </h1>
+        <div className="mb-4 sm:mb-6 sticky top-0 z-[100]">
           <ActivitiesPanel
             activities={activities}
             activitiesCollapsed={activitiesCollapsed}
@@ -223,17 +227,17 @@ const ScheduleTableSystem = () => {
             )}
             updateActivity={updateActivity}
           />
-
-          <ControlsPanel
-            addTimeSlot={() => addTimeSlot(timeSlots, setTimeSlots)}
-            resetTable={resetTable}
-            handlePrint={handlePrint}
-            handleExport={handleExport}
-            handleImport={handleImport}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-          />
         </div>
+
+        <ControlsPanel
+          addTimeSlot={() => addTimeSlot(timeSlots, setTimeSlots)}
+          resetTable={resetTable}
+          handlePrint={handlePrint}
+          handleExport={handleExport}
+          handleImport={handleImport}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
 
         <div className="block sm:hidden print-area">
           {viewMode === "tabs" ? (
@@ -244,6 +248,7 @@ const ScheduleTableSystem = () => {
               daysShort={daysShort}
               timeSlots={timeSlots}
               schedule={schedule}
+              setSchedule={setSchedule}
               removeTimeSlot={(time) =>
                 removeTimeSlot(
                   time,
@@ -307,6 +312,7 @@ const ScheduleTableSystem = () => {
               daysShort={daysShort}
               timeSlots={timeSlots}
               schedule={schedule}
+              setSchedule={setSchedule}
               removeTimeSlot={(time) =>
                 removeTimeSlot(
                   time,
@@ -371,6 +377,7 @@ const ScheduleTableSystem = () => {
             daysShort={daysShort}
             timeSlots={timeSlots}
             schedule={schedule}
+            setSchedule={setSchedule}
             removeTimeSlot={(time) =>
               removeTimeSlot(
                 time,
